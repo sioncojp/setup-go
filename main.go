@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	app = "go-setup"
+	app = "setup-go"
 )
 
 // reponame ...RepositoryName
