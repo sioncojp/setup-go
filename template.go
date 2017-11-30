@@ -84,6 +84,9 @@ dist: build-cross ## create .tar.gz linux & darwin to /bin
 build: ## go build
 	go build -o bin/$(name) $(LDFLAGS) cmd/$(name)/*.go
 
+test: ## go test
+	go test -v $$(go list ./... | grep -v /vendor/)
+
 deps: ## dep ensure
 	dep ensure
 
