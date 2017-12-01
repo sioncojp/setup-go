@@ -52,8 +52,8 @@ func Run() error {
 
 	material := &Material{}
 	material.Dirs.Create(rn)
-	material.Files.Create(rn)
-	material.Templates.Create(rn)
+	defer material.Templates.Create(rn)
+	defer material.Files.Create(rn)
 
 	return nil
 }

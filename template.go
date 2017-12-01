@@ -42,7 +42,7 @@ func (t *Templates) Create(rn reponame) {
 			if err != nil {
 				return
 			}
-			log.Printf("[INFO] create tempate: %s\n", k)
+			log.Printf("[INFO] create template: %s\n", k)
 		}()
 	}
 }

@@ -1,0 +1,14 @@
+_vendor
+.vendor
+vendor
+_vendor-*
+*.pid
+bin/setup-go
+
+tmp/*
+
+### Other ###
+.idea/
+
+### .gitkeep ###
+!.gitkeep
