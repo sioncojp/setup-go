@@ -4,6 +4,8 @@ vendor
 _vendor-*
 *.pid
 bin/setup-go
+*.swp
+.DS_Store
 
 tmp/*
 
