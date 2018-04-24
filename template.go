@@ -87,10 +87,14 @@ build: ## go build
 test: ## go test
 	go test -v $$(go list ./... | grep -v /vendor/)
 
-deps: ## dep ensure
+dep: ## dep ensure
 	dep ensure
 
-deps/update: ## dep update
+dep/init: ## dep init
+	dep init
+
+dep/update: ## dep update
+	rm -f Gopkg.lock
 	dep ensure -update
 
 clean: ## remove bin/*
