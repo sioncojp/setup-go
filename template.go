@@ -53,7 +53,8 @@ vendor
 _vendor-*
 *.pid
 bin/{{.RepoName}}
-
+*.swp
+.DS_Store
 tmp/*
 
 ### Other ###
@@ -94,14 +95,13 @@ dep/init: ## dep init
 	dep init
 
 dep/update: ## dep update
-	rm -f Gopkg.lock
 	dep ensure -update
 
 clean: ## remove bin/*
 	rm -f bin/*
 
 run: ## go run
-	go run cmd/$(name)/$(name).go -c example/config.toml
+	go run cmd/$(name)/main.go -c examples/config.toml
 
 help:
 	@awk -F ':|##' '/^[^\t].+?:.*?##/ { printf "\033[36m%-22s\033[0m %s\n", $$1, $$NF }' $(MAKEFILE_LIST)
