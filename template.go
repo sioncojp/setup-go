@@ -16,6 +16,7 @@ func (t *Templates) Get() map[string]string {
 	return map[string]string{
 		".gitignore": gitignoreTemplate,
 		"Makefile":   makefileTemplate,
+		"build.sh":   buildShellTemplate,
 	}
 }
 
@@ -52,10 +53,10 @@ const gitignoreTemplate = `_vendor
 vendor
 _vendor-*
 *.pid
-bin/{{.RepoName}}
 *.swp
 .DS_Store
 tmp/*
+bin/
 
 ### Other ###
 .idea/
@@ -85,6 +86,9 @@ dist: build-cross ## create .tar.gz linux & darwin to /bin
 build: ## go build
 	go build -o bin/$(name) $(LDFLAGS) cmd/$(name)/*.go
 
+docker-build: ## go build on Docker
+	@docker run --rm -v "$(PWD)":/go/src/github.com/sioncojp/$(name) -w /go/src/github.com/sioncojp/$(name) golang:latest bash build.sh
+
 test: ## go test
 	go test -v $$(go list ./... | grep -v /vendor/)
 
@@ -103,6 +107,15 @@ clean: ## remove bin/*
 run: ## go run
 	go run cmd/$(name)/main.go -c examples/config.toml
 
+lint: ## go lint ignore vendor
+	golint $(go list ./... | grep -v /vendor/)
+
 help:
 	@awk -F ':|##' '/^[^\t].+?:.*?##/ { printf "\033[36m%-22s\033[0m %s\n", $$1, $$NF }' $(MAKEFILE_LIST)
+`
+
+const buildShellTemplate = `#!/bin/bash -
+for GOOS in darwin linux; do
+    GOOS=$GOOS GOARCH=amd64 go build -o bin/{{.RepoName}}-$GOOS-amd64 cmd/{{.RepoName}}/*.go
+done
 `
