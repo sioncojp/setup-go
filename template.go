@@ -8,6 +8,7 @@ import (
 
 // Inventory ...for go-template
 type Inventory struct {
+	GithubAccountName githubAccountName
 	RepoName reponame
 }
 
@@ -21,9 +22,12 @@ func (t *Templates) Get() map[string]string {
 }
 
 // Create ...create template
-func (t *Templates) Create(rn reponame) {
+func (t *Templates) Create(account githubAccountName, rn reponame) {
 	templates := t.Get()
-	in := Inventory{RepoName: rn}
+	in := Inventory{
+		GithubAccountName: account,
+		RepoName: rn,
+	}
 	for k, v := range templates {
 		// check Template exist
 		if FileExist(k) {
@@ -84,14 +88,11 @@ build-cross: ## create to build for linux & darwin to bin/
 	GOOS=linux GOARCH=amd64 go build -o bin/$(linux_name) $(LDFLAGS) cmd/$(name)/*.go
 	GOOS=darwin GOARCH=amd64 go build -o bin/$(darwin_name) $(LDFLAGS) cmd/$(name)/*.go
 
-build-docker: ## go build on Docker
-	@docker run --rm -v "$(PWD)":/go/src/$(name) -w /go/src/$(name) golang:$(GO_VERSION) bash build.sh
-
 build: ## go build
 	go build -o bin/$(name) $(LDFLAGS) cmd/$(name)/*.go
 
 build-docker: ## go build on Docker
-	@docker run --rm -v "$(PWD)":/go/src/github.com/sioncojp/$(name) -w /go/src/github.com/sioncojp/$(name) golang:latest bash build.sh
+	@docker run --rm -v "$(PWD)":/go/src/github.com/{{.GithubAccountName}}/$(name) -w /go/src/github.com/{{.GithubAccountName}}/$(name) golang:latest bash build.sh
 
 test: ## go test
 	go test -v $$(go list ./... | grep -v /vendor/)

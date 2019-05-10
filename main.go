@@ -10,7 +10,9 @@ const (
 	app = "setup-go"
 )
 
-// reponame ...RepositoryName
+type githubAccountName string
+
+// reponame ... RepositoryName
 type reponame string
 
 // Templates ...plan to create files from go-template
@@ -45,28 +47,28 @@ func main() {
 
 // Run ...run go-setup
 func Run() error {
-	rn, err := NewRepoName()
+	account, rn, err := NewName()
 	if err != nil {
 		return err
 	}
 
 	material := &Material{}
 	material.Dirs.Create(rn)
-	defer material.Templates.Create(rn)
+	defer material.Templates.Create(account, rn)
 	defer material.Files.Create(rn)
 
 	return nil
 }
 
 // RepoName ...Return current repository name
-func NewRepoName() (reponame, error) {
+func NewName() (githubAccountName, reponame, error) {
 	pwd, err := os.Getwd()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	s := strings.Split(pwd, "/")
 
-	return reponame(s[len(s)-1]), nil
+	return githubAccountName(s[len(s)-2]), reponame(s[len(s)-1]), nil
 }
 
 // FileExists ...check file exist
