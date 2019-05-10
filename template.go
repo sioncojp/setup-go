@@ -74,6 +74,7 @@ LDFLAGS	:= -ldflags="-X \"main.Revision=$(REVISION)\" -X \"main.BuildDate=${DATE
 name		:= {{.RepoName}}
 linux_name	:= $(name)-linux-amd64
 darwin_name	:= $(name)-darwin-amd64
+GO_VERSION  := 1.11
 
 dist: build-docker ## create .tar.gz linux & darwin to /bin
 	cd bin && tar zcvf $(linux_name).tar.gz $(linux_name) && rm -f $(linux_name)
@@ -82,6 +83,9 @@ dist: build-docker ## create .tar.gz linux & darwin to /bin
 build-cross: ## create to build for linux & darwin to bin/
 	GOOS=linux GOARCH=amd64 go build -o bin/$(linux_name) $(LDFLAGS) cmd/$(name)/*.go
 	GOOS=darwin GOARCH=amd64 go build -o bin/$(darwin_name) $(LDFLAGS) cmd/$(name)/*.go
+
+build-docker: ## go build on Docker
+	@docker run --rm -v "$(PWD)":/go/src/$(name) -w /go/src/$(name) golang:$(GO_VERSION) bash build.sh
 
 build: ## go build
 	go build -o bin/$(name) $(LDFLAGS) cmd/$(name)/*.go
@@ -109,7 +113,9 @@ help:
 `
 
 const buildShellTemplate = `#!/bin/bash -
+declare -r Name="{{.RepoName}}"
+
 for GOOS in darwin linux; do
-    GOOS=$GOOS GOARCH=amd64 go build -o bin/{{.RepoName}}-$GOOS-amd64 cmd/{{.RepoName}}/*.go
+    GO111MODULE=on GOOS=$GOOS GOARCH=amd64 go build -o bin/{{.RepoName}}-$GOOS-amd64 cmd/{{.RepoName}}/*.go
 done
 `

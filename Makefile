@@ -10,12 +10,6 @@ darwin_name	:= $(name)-darwin-amd64
 build: ## go build
 	go build -o bin/$(name) $(LDFLAGS) *.go
 
-deps: ## dep ensure
-	dep ensure
-
-deps/update: ## dep update
-	dep ensure -update
-
 clean: ## remove bin/*
 	rm -f bin/*
 
