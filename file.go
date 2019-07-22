@@ -11,7 +11,6 @@ func (f *Files) Get(rn reponame) []string {
 	return []string{
 		"README.md",
 		"bin/.gitkeep",
-		fmt.Sprintf("cmd/%s/.gitkeep", rn),
 	}
 }
 
