@@ -78,18 +78,21 @@ LDFLAGS	:= -ldflags="-X \"main.Revision=$(REVISION)\" -X \"main.BuildDate=${DATE
 name		:= {{.RepoName}}
 linux_name	:= $(name)-linux-amd64
 darwin_name	:= $(name)-darwin-amd64
-GO_VERSION  := 1.11
+GO_VERSION      := 1.12
+
+help:
+	@awk -F ':|##' '/^[^\t].+?:.*?##/ { printf "\033[36m%-22s\033[0m %s\n", $$1, $$NF }' $(MAKEFILE_LIST)
 
 dist: build-docker ## create .tar.gz linux & darwin to /bin
 	cd bin && tar zcvf $(linux_name).tar.gz $(linux_name) && rm -f $(linux_name)
 	cd bin && tar zcvf $(darwin_name).tar.gz $(darwin_name) && rm -f $(darwin_name)
 
 build-cross: ## create to build for linux & darwin to bin/
-	GOOS=linux GOARCH=amd64 go build -o bin/$(linux_name) $(LDFLAGS) cmd/$(name)/*.go
-	GOOS=darwin GOARCH=amd64 go build -o bin/$(darwin_name) $(LDFLAGS) cmd/$(name)/*.go
+	GOOS=linux GOARCH=amd64 go build -o bin/$(linux_name) $(LDFLAGS) *.go
+	GOOS=darwin GOARCH=amd64 go build -o bin/$(darwin_name) $(LDFLAGS) *.go
 
 build: ## go build
-	go build -o bin/$(name) $(LDFLAGS) cmd/$(name)/*.go
+	go build -o bin/$(name) $(LDFLAGS) *.go
 
 build-docker: ## go build on Docker
 	@docker run --rm -v "$(PWD)":/go/src/github.com/{{.GithubAccountName}}/$(name) -w /go/src/github.com/{{.GithubAccountName}}/$(name) golang:latest bash build.sh
@@ -104,19 +107,16 @@ clean: ## remove bin/*
 	rm -f bin/*
 
 run: ## go run
-	go run cmd/$(name)/main.go -c examples/config.toml
+	go run main.go
 
 lint: ## go lint ignore vendor
 	golint $(go list ./... | grep -v /vendor/)
-
-help:
-	@awk -F ':|##' '/^[^\t].+?:.*?##/ { printf "\033[36m%-22s\033[0m %s\n", $$1, $$NF }' $(MAKEFILE_LIST)
 `
 
 const buildShellTemplate = `#!/bin/bash -
 declare -r Name="{{.RepoName}}"
 
 for GOOS in darwin linux; do
-    GO111MODULE=on GOOS=$GOOS GOARCH=amd64 go build -o bin/{{.RepoName}}-$GOOS-amd64 cmd/{{.RepoName}}/*.go
+    GO111MODULE=on GOOS=$GOOS GOARCH=amd64 go build -o bin/{{.RepoName}}-$GOOS-amd64 *.go
 done
 `
