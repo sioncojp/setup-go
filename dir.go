@@ -11,7 +11,6 @@ import (
 func (d *Dirs) Get(rn reponame) []string {
 	return []string{
 		"bin/",
-		fmt.Sprintf("cmd/%s/", rn),
 	}
 }
 
