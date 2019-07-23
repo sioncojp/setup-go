@@ -71,7 +71,7 @@ bin/
 
 const makefileTemplate = `REVISION := $(shell git describe --always)
 DATE := $(shell date +%Y-%m-%dT%H:%M:%S%z)
-LDFLAGS	:= -ldflags="-X \"main.Revision=$(REVISION)\" -X \"main.BuildDate=${DATE}\""
+LDFLAGS	:= -ldflags="-X \"main.Revision=$(REVISION)\" -X \"main.BuildDate=${DATE}\" -extldflags \"-static\""
 
 .PHONY: build-cross dist build mod clean run help
 
